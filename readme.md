@@ -1,1 +1,1 @@
-There should some description about Solitaire game
+There should some description about Solitaire game.
