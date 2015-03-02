@@ -1,0 +1,12 @@
+E:\SalitaireGame\Solitaire\DataLayer\bin\Debug\DataLayer.dll.config
+E:\SalitaireGame\Solitaire\DataLayer\bin\Debug\DataLayer.dll
+E:\SalitaireGame\Solitaire\DataLayer\bin\Debug\DataLayer.pdb
+E:\SalitaireGame\Solitaire\DataLayer\bin\Debug\MongoDB.Bson.dll
+E:\SalitaireGame\Solitaire\DataLayer\bin\Debug\MongoDB.Driver.dll
+E:\SalitaireGame\Solitaire\DataLayer\bin\Debug\MongoRepository.Net45.dll
+E:\SalitaireGame\Solitaire\DataLayer\bin\Debug\MongoDB.Bson.xml
+E:\SalitaireGame\Solitaire\DataLayer\bin\Debug\MongoDB.Driver.xml
+E:\SalitaireGame\Solitaire\DataLayer\bin\Debug\MongoRepository.Net45.xml
+E:\SalitaireGame\Solitaire\DataLayer\obj\Debug\DataLayer.csprojResolveAssemblyReference.cache
+E:\SalitaireGame\Solitaire\DataLayer\obj\Debug\DataLayer.dll
+E:\SalitaireGame\Solitaire\DataLayer\obj\Debug\DataLayer.pdb

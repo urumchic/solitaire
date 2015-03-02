@@ -1,0 +1,13 @@
+﻿@using MongoDB.Bson
+@model DataLayer.Models.Game
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/_LayoutPage.cshtml";
+}
+<script type="text/javascript" src="~/Scripts/kinetic-v4.4.3.js"></script>
+<script type="text/javascript" src="~/Scripts/custom/solitaireBoard.js"></script>
+<script type="text/javascript" src="~/Scripts/custom/game.js"></script>
+
+<div id="game-container" ng-controller="gameController as gameCtrl" ng-init="gameCtrl.initController(@Json.Encode(Model))">
+    <div id="game-board"></div>
+</div>
