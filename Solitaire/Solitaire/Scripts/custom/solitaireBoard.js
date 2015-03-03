@@ -1,22 +1,23 @@
 ﻿function SolitaireBoardConstructor(stage, gameData) {
     var self = this;
-    var layer = new Kinetic.Layer();
+    var cellsLayer = new Kinetic.Layer();
+    var piecesLayer = new Kinetic.Layer();
     var boardColor = "#4AADE8";
-    layer.add(new Kinetic.Circle({
+    cellsLayer.add(new Kinetic.Circle({
         x: 300,
         y: 300,
         radius: 300,
         fill: boardColor,
-        stroke: '#4A3DE8'
+        stroke: '#4A3DE8',
+        name: 'boardCircle'
     }));
 
     var cellRadius = 35;
     var xOffset = 60;
-    var cellColor = "#BCE8BF";
+    var cellBackColor = "#BCE8BF";
 
     var lastState = gameData.States[gameData.States.length - 1];
     //console.log('lastState: ', lastState);
-    var selectedCell = null;
     for (var i = 0; i < lastState.length - 1 ; i++) {
         var yOffset = 60;
         for (var j = 0; j < lastState.length - 1; j++) {
@@ -27,39 +28,66 @@
             if (lastState[i][j] < 0) {
                 continue;
             }
-            var circleColor = lastState[i][j] == 0 ? cellColor : "black";
-            var cellCircle = new Kinetic.Circle({
+            cellsLayer.add(new Kinetic.Circle({
                 x: x,
                 y: y,
                 radius: cellRadius,
-                fill: circleColor,
+                fill: cellBackColor,
                 col: j,
-                row: i
-            });
+                row: i,
+                name: 'cellCircle'
+            }));
 
-            cellCircle.on('click', function () {
-                if (lastState[this.attrs.row][this.attrs.col] !== 1 && selectedCell === null) {
-                    console.log('empty cell cannot be selected');
-                } else if (selectedCell === null) {
-                    selectedCell = {
-                        col: this.attrs.col,
-                        row: this.attrs.row
-                    };
-                    console.log('cell ', selectedCell.col, selectedCell.row, 'was selected');
-                } else if (lastState[this.attrs.row][this.attrs.col] === 1) {
-                    console.log('cannot move to ocupied cell');
-                    selectedCell = null;x
-                } else {
-                    console.log('move from: ', selectedCell.col, selectedCell.row, 'to: ', this.attrs.col, this.attrs.row);
-                    selectedCell = null;
-                }
-            });
-            layer.add(cellCircle);
-            
+            if (lastState[i][j] == 1) {
+                var pieceCircle = new Kinetic.Circle({
+                    x: x,
+                    y: y,
+                    radius: cellRadius,
+                    fill: 'black',
+                    stroke: '',
+                    draggable: true,
+                    col: j,
+                    row: i
+                });
+                pieceCircle.on('dragstart', function() {
+                    console.log('drag start');
+                });
+                pieceCircle.on('dragmove', function () {
+                    console.log('drag mooving...');
+                });
+                pieceCircle.on('dragend', function() {
+                    var draggedPiece = this;
+                    var moreCoveredCell = null;
+                    var minDistance = Number.MAX_VALUE;
+                    for (var index = 0; index < cellsLayer.children.length; index++) {
+                        var cellShape = cellsLayer.children[index];
+                        if (cellShape.attrs.name !== 'cellCircle') continue;
+
+                        var distance = Math.sqrt(Math.pow(draggedPiece.attrs.x - cellShape.attrs.x, 2) + Math.pow(draggedPiece.attrs.y - cellShape.attrs.y, 2));
+                        if (distance <= (cellShape.attrs.radius + draggedPiece.attrs.radius)) {
+                            if (distance < minDistance) {
+                                minDistance = distance;
+                                moreCoveredCell = cellShape;
+                            }
+                        }
+                    }
+                    console.log(draggedPiece.setX);
+                    if (moreCoveredCell !== null) {
+                        draggedPiece.setX(moreCoveredCell.attrs.x);
+                        draggedPiece.setY(moreCoveredCell.attrs.y);
+                        piecesLayer.draw();
+                    }
+                });
+
+                piecesLayer.add(pieceCircle);
+            }
+                        
         }
         xOffset += 10;
     }
 
+   
 
-    stage.add(layer);
+    stage.add(cellsLayer);
+    stage.add(piecesLayer);
 };
