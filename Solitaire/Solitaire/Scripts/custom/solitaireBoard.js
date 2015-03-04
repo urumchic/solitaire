@@ -28,7 +28,8 @@
             if (lastState[i][j] < 0) {
                 continue;
             }
-            cellsLayer.add(new Kinetic.Circle({
+
+            var cellCircle = new Kinetic.Circle({
                 x: x,
                 y: y,
                 radius: cellRadius,
@@ -36,18 +37,28 @@
                 col: j,
                 row: i,
                 name: 'cellCircle'
-            }));
+            });
+            cellsLayer.add(cellCircle);
 
             if (lastState[i][j] == 1) {
                 var pieceCircle = new Kinetic.Circle({
                     x: x,
-                    y: y,
+                    y: y,                    
                     radius: cellRadius,
                     fill: 'black',
                     stroke: '',
                     draggable: true,
                     col: j,
-                    row: i
+                    row: i,
+                    initCoords: { x: x, y: y },
+                    parkingCell: cellCircle,
+                    moveToCell: function(targetCell) {
+                        this.x = targetCell.attrs.x;
+                        this.y = targetCell.attrs.y;
+                        this.initCoords.x = targetCell.attrs.x;
+                        this.initCoords.y = targetCell.attrs.y;
+                        this.parkingCell = targetCell;
+                    }
                 });
                 pieceCircle.on('dragstart', function() {
                     console.log('drag start');
@@ -57,24 +68,27 @@
                 });
                 pieceCircle.on('dragend', function() {
                     var draggedPiece = this;
-                    var moreCoveredCell = null;
+                    var targetCell = null;
                     var minDistance = Number.MAX_VALUE;
-                    for (var index = 0; index < cellsLayer.children.length; index++) {
-                        var cellShape = cellsLayer.children[index];
-                        if (cellShape.attrs.name !== 'cellCircle') continue;
-
+                    var cellShapes = cellsLayer.children.filter(function(arrItem) {
+                         return arrItem.attrs.name === 'cellCircle';
+                    });
+                    cellShapes.forEach(function(cellShape) {
                         var distance = Math.sqrt(Math.pow(draggedPiece.attrs.x - cellShape.attrs.x, 2) + Math.pow(draggedPiece.attrs.y - cellShape.attrs.y, 2));
                         if (distance <= (cellShape.attrs.radius + draggedPiece.attrs.radius)) {
                             if (distance < minDistance) {
                                 minDistance = distance;
-                                moreCoveredCell = cellShape;
+                                targetCell = cellShape;
                             }
                         }
-                    }
-                    console.log(draggedPiece.setX);
-                    if (moreCoveredCell !== null) {
-                        draggedPiece.setX(moreCoveredCell.attrs.x);
-                        draggedPiece.setY(moreCoveredCell.attrs.y);
+                    });
+
+                    if (isMoveValid(draggedPiece.attrs.parkingCell, targetCell)) {
+                        draggedPiece.attrs.moveToCell(targetCell);                        
+                        piecesLayer.draw();
+                    } else {
+                        draggedPiece.setX(draggedPiece.attrs.initCoords.x);                        
+                        draggedPiece.setY(draggedPiece.attrs.initCoords.y);
                         piecesLayer.draw();
                     }
                 });
@@ -86,7 +100,11 @@
         xOffset += 10;
     }
 
-   
+    var isMoveValid = function (startCell, endCell) {
+        if (!startCell || !endCell) return false;
+        var distance = Math.sqrt(Math.pow(startCell.attrs.col - endCell.attrs.col, 2) + Math.pow(startCell.attrs.row - endCell.attrs.row, 2));
+        return !lastState[endCell.attrs.row][endCell.attrs.col] && distance == 2;
+    };
 
     stage.add(cellsLayer);
     stage.add(piecesLayer);
